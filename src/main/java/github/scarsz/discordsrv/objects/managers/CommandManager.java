@@ -52,6 +52,7 @@ public class CommandManager {
                 CommandLanguage.class,
                 CommandLink.class,
                 CommandLinked.class,
+                CommandReconnect.class,
                 CommandReload.class,
                 CommandResync.class,
                 CommandUnlink.class

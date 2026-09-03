@@ -34,6 +34,7 @@ commands:
            /discord broadcast - Broadcast a message to Discord
            /discord debug - Send debug information to Gist
            /discord reload - Reload the plugin
+           /discord reconnect - Reconnect DiscordSRV to Discord
            /discord resync - Resynchronizes all groups & roles
            /discord language - Changes the language of DiscordSRV to whatever is specified
            /discord debugger - A toggleable timings-like command to dump debug information to bin.scarsz.me
@@ -58,6 +59,7 @@ permissions:
       discordsrv.updatenotification: true
       discordsrv.bcast: true
       discordsrv.reload: true
+      discordsrv.reconnect: true
       discordsrv.debug: true
       discordsrv.link.others: true
       discordsrv.linked.others: true
@@ -66,6 +68,9 @@ permissions:
       discordsrv.resync: true
       discordsrv.groupsyncwithcommands: true
       discordsrv.language: true
+  discordsrv.reconnect:
+    description: whether the player can run /discord reconnect to reconnect DiscordSRV to Discord
+    default: op
   discordsrv.discord:
     description: allows access to the discord command
     default: true

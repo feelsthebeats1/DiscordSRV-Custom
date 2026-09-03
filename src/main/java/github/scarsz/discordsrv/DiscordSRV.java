@@ -514,6 +514,75 @@ public class DiscordSRV extends JavaPlugin {
         }
     }
 
+    /**
+     * Reconnects to Discord by shutting down the current JDA instance and reinitializing.
+     * This can be used when the bot gets disconnected and auto-reconnect fails.
+     *
+     * @param callback Runnable to execute after reconnection attempt completes
+     */
+    public void reconnectToDiscord(Runnable callback) {
+        DiscordSRV.info("Attempting to reconnect to Discord...");
+
+        // Shutdown existing JDA instance if it exists
+        if (jda != null) {
+            try {
+                // Clear listeners before shutdown
+                jda.getEventManager().getRegisteredListeners().forEach(listener -> jda.getEventManager().unregister(listener));
+                jda.shutdown();
+                jda = null;
+            } catch (Exception e) {
+                error("Error shutting down JDA during reconnect", e);
+            }
+        }
+
+        // Stop existing threads to prevent duplicates
+        if (channelTopicUpdater != null) {
+            channelTopicUpdater.interrupt();
+            channelTopicUpdater = null;
+        }
+        if (channelUpdater != null) {
+            channelUpdater.interrupt();
+            channelUpdater = null;
+        }
+        if (presenceUpdater != null) {
+            presenceUpdater.interrupt();
+            presenceUpdater = null;
+        }
+        if (nicknameUpdater != null) {
+            nicknameUpdater.interrupt();
+            nicknameUpdater = null;
+        }
+        if (serverWatchdog != null) {
+            serverWatchdog.interrupt();
+            serverWatchdog = null;
+        }
+
+        // Shutdown update checker to be recreated
+        if (updateChecker != null) {
+            updateChecker.shutdown();
+            updateChecker = null;
+        }
+
+        // Run initialization in a new thread (same as onEnable does)
+        Thread reconnectThread = new Thread(() -> {
+            try {
+                init();
+                DiscordSRV.info("Reconnection attempt completed.");
+            } catch (Exception e) {
+                error("Failed to reconnect to Discord", e);
+            }
+            if (callback != null) {
+                callback.run();
+            }
+        }, "DiscordSRV - Reconnect");
+        reconnectThread.setDaemon(true);
+        reconnectThread.start();
+    }
+
+    public void reconnectToDiscord() {
+        reconnectToDiscord(null);
+    }
+
     public void init() {
         if (Bukkit.getPluginManager().isPluginEnabled("PlugMan")) {
             Plugin plugMan = Bukkit.getPluginManager().getPlugin("PlugMan");

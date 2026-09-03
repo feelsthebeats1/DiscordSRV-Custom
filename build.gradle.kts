@@ -16,14 +16,14 @@ plugins {
 group = "com.discordsrv"
 val minecraftVersion = project.properties["minecraftVersion"]!!.toString()
 val paperApiVersion = project.properties["paperVersion"]!!.toString()
-val targetJavaVersion = 1.8
+val targetJavaVersion = 25
 
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
 
-    disableAutoTargetJvm() // required because paper-api uses Java 21 (w/ gradle metadata)
+    toolchain { languageVersion.set(JavaLanguageVersion.of(targetJavaVersion)) } // required because paper-api uses Java 21 (w/ gradle metadata)
 }
 
 indraSpotlessLicenser {
@@ -231,8 +231,8 @@ dependencies {
     compileOnlyApi("org.jetbrains:annotations:23.0.0")
 
     // Lombok
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    compileOnly("org.projectlombok:lombok:1.18.48")
+    annotationProcessor("org.projectlombok:lombok:1.18.48")
 
     // Apache Commons, guava
     implementation("commons-io:commons-io:2.11.0")
