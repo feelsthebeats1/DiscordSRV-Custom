@@ -535,6 +535,21 @@ public class DiscordSRV extends JavaPlugin {
             }
         }
 
+        // Unregister ALL Bukkit event listeners to prevent duplicates on reconnection, fix duplicate chat on /discordsrv reconnect
+        try {
+            // Use reflection to access HandlerList.allLists (contains all HandlerLists for all event types)
+            java.lang.reflect.Field allField = HandlerList.class.getDeclaredField("allLists");
+            allField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            java.util.List<HandlerList> allLists = (java.util.List<HandlerList>) allField.get(null);
+            for (HandlerList handlerList : allLists) {
+                handlerList.unregister(this);
+            }
+            DiscordSRV.debug("Unregistered all Bukkit event listeners for reconnection");
+        } catch (Exception e) {
+            DiscordSRV.error("Failed to unregister Bukkit listeners during reconnect", e);
+        }
+
         // Stop existing threads to prevent duplicates
         if (channelTopicUpdater != null) {
             channelTopicUpdater.interrupt();
